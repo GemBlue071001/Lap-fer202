@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 interface ThemeContextType {
   isLightTheme: boolean;
@@ -11,6 +11,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [isLightTheme, setIsLightTheme] = useState(true);
 
   const toggleTheme = () => setIsLightTheme((prev) => !prev);
+
+  useEffect(() => {
+    document.body.setAttribute("data-theme", isLightTheme ? "light" : "dark");
+  }, [isLightTheme]);
 
   return (
     <ThemeContext.Provider value={{ isLightTheme, toggleTheme }}>
