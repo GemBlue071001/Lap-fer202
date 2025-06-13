@@ -8,6 +8,17 @@ import * as Yup from 'yup';
 const ContactPage = () => {
     const { isLightTheme } = useTheme();
 
+    const darkThemeStyles = !isLightTheme ? {
+        sx: {
+            input: { color: 'white' },
+            label: { color: 'white' },
+            '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: 'white' },
+                '&:hover fieldset': { borderColor: 'white' },
+            }
+        }
+    } : {};
+
     const formik = useFormik({
         initialValues: {
             name: "",
@@ -42,7 +53,8 @@ const ContactPage = () => {
                         onChange={formik.handleChange}
                         fullWidth
                         margin="normal"
-                        className={`${!isLightTheme ? 'bg-dark text-white' : ''}`}
+                        className={`${!isLightTheme ? 'bg-dark' : ''}`}
+                        {...darkThemeStyles}
                     />
                     {formik.errors.name && (<Typography variant="caption" color="error">{formik.errors.name}</Typography>)}
 
@@ -53,7 +65,8 @@ const ContactPage = () => {
                         onChange={formik.handleChange}
                         fullWidth
                         margin="normal"
-                        className={`${!isLightTheme ? 'bg-dark text-white' : ''}`}
+                        className={`${!isLightTheme ? 'bg-dark' : ''}`}
+                        {...darkThemeStyles}
                     />
                     {formik.errors.email && (<Typography variant="caption" color="error">{formik.errors.email}</Typography>)}
 
@@ -64,19 +77,31 @@ const ContactPage = () => {
                         onChange={formik.handleChange}
                         fullWidth
                         margin="normal"
-                        className={`${!isLightTheme ? 'bg-dark text-white' : ''}`}
+                        className={`${!isLightTheme ? 'bg-dark' : ''}`}
+                        {...darkThemeStyles}
                     />
                     {formik.errors.phone && (<Typography variant="caption" color="error">{formik.errors.phone}</Typography>)}
 
                     <FormControl fullWidth margin="normal">
-                        <InputLabel id="program-label">Program of Study</InputLabel>
+                        <InputLabel 
+                            id="program-label" 
+                            sx={!isLightTheme ? { color: 'white' } : {}}
+                        >
+                            Program of Study
+                        </InputLabel>
                         <Select
                             labelId="program-label"
                             label="Program of Study"
                             name="program"
                             value={formik.values.program}
                             onChange={formik.handleChange}
-                            className={`${!isLightTheme ? 'bg-dark text-white' : ''}`}
+                            className={`${!isLightTheme ? 'bg-dark' : ''}`}
+                            sx={!isLightTheme ? { 
+                                color: 'white',
+                                '.MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'white' }
+                            } : {}}
                         >
                             <MenuItem value={0}><em>Please select</em></MenuItem>
                             <MenuItem value={1}>Software Engineering</MenuItem>
@@ -98,7 +123,8 @@ const ContactPage = () => {
                         rows={4}
                         fullWidth
                         margin="normal"
-                        className={`${!isLightTheme ? 'bg-dark text-white' : ''}`}
+                        className={`${!isLightTheme ? 'bg-dark' : ''}`}
+                        {...darkThemeStyles}
                     />
                     {formik.errors.message && (<Typography variant="caption" color="error">{formik.errors.message}</Typography>)}
 
