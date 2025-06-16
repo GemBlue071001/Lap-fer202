@@ -11,7 +11,7 @@ const axiosInstance: AxiosInstance = axios.create({
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
-    (config) => {
+    (config:any) => {
         // Get token from localStorage
         const token = localStorage.getItem('token');
         if (token && config.headers) {
@@ -19,15 +19,15 @@ axiosInstance.interceptors.request.use(
         }
         return config;
     },
-    (error) => {
+    (error:any) => {
         return Promise.reject(error);
     }
 );
 
 // Response interceptor
 axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
+    (response:any) => response,
+    (error:any) => {
         if (error.response) {
             // Handle specific HTTP errors
             switch (error.response.status) {
