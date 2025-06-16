@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Container, Toast, Spinner } from 'react-bootstrap';
 import { useTheme } from '../context/ThemeContext';
-import { listOfOrchids } from '../data/ListOfOrchids';
 import Layout from '../Layout/Layout';
 import OrchidFormModal from '../component/OrchidCard/OrchidFormModal';
 import { useEffect, useState, useCallback } from 'react';
