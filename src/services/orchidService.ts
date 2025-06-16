@@ -1,5 +1,5 @@
 import { Orchid } from "../model.ts/orchids";
-import api from "./axiosConfig";
+import api from "../util/axiosConfig";
 
 export const OrchidService = {
     // Define your service methods here
