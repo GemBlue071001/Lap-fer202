@@ -5,31 +5,18 @@ import { CiLight } from "react-icons/ci";
 import { MdDarkMode } from "react-icons/md";
 import { useTheme } from "../../context/ThemeContext";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import appLocalStorage from "../../util/appLocalStorage";
-import { useEffect, useState } from "react";
-import { localKeyItem } from "../../util/localKeyItem";
+import { useCredential } from "../../hooks/useCredential";
 
 const TopNavigation = () => {
     const { isLightTheme, toggleTheme } = useTheme();
-    const [credential, setCredential] = useState<string | undefined>(undefined);
-
-    useEffect(() => {
-        const storedCredential = appLocalStorage.getItem(localKeyItem.userCredential);
-        if (storedCredential) {
-            setCredential(storedCredential);
-        } else {
-            setCredential(undefined);
-        }
-    }, []);
+    const { credential, updateCredential } = useCredential();
 
     const handleOnLoginSuccess = (credentialResponse: CredentialResponse) => {
-        appLocalStorage.setItem(localKeyItem.userCredential, credentialResponse.credential);
-        setCredential(credentialResponse.credential);
+        updateCredential(credentialResponse.credential);
     }
 
     const handleOnLogout = () => {
-        appLocalStorage.removeItem(localKeyItem.userCredential);
-        setCredential(undefined);
+        updateCredential(undefined);
     }
 
     return (

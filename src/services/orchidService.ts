@@ -12,21 +12,21 @@ export const OrchidService = {
 
     createOrchids: async (newOrchid:Orchid) => {
         // Example API call to fetch orchids
-        const response: Orchid[]= await api.post('/orchid');
+        const response = await api.post('/orchid');
 
         return response;
     },
 
-    updateOrchids: async () => {
+    updateOrchids: async (id:string , orchid :any ) => {
         // Example API call to fetch orchids
-        const response: Orchid[]= await api.put('/orchid');
+        const response = await api.put(`/orchid/${id}`, orchid);
 
         return response;
     },
 
-    deleteOrchids: async () => {
+    deleteOrchids: async (id:string) => {
         // Example API call to fetch orchids
-        const response: Orchid[]= await api.delete('/orchid');
+        const response = await api.delete(`/orchid/${id}`);
 
         return response;
     },

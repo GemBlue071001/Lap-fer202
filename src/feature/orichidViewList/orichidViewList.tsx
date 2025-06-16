@@ -5,14 +5,30 @@ import styles from "./OrichidViewList.module.css"
 import { OrchidService } from "../../services/orchidService"
 import { Orchid } from "../../model.ts/orchids"
 import CreateOrchidModal from "../../component/OrchidCard/CreateOrchidModal"
+import appLocalStorage from "../../util/appLocalStorage"
+import { localKeyItem } from "../../util/localKeyItem"
+import { useCredential } from "../../hooks/useCredential"
 
 const OrichidViewList = () => {
     const [orchids, setOrchids] = useState<Orchid[]>();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const { credential } = useCredential();
 
     const getListOfOrchidsAsync = async () => {
         const orchids = await OrchidService.getOrchids();
         setOrchids(orchids);
+    }
+
+    const handleOnClick = () => {
+        var storedCredential = appLocalStorage.getItem(localKeyItem.userCredential);
+        console.log("Stored Credential: ", storedCredential);
+        
+        if (!storedCredential) {
+            alert("Please login to create a new orchid.");
+            return;
+        } else {
+            setIsCreateModalOpen(true)
+        }
     }
 
     useEffect(() => {
@@ -26,7 +42,7 @@ const OrichidViewList = () => {
                     <h1>Orchid Collection</h1>
                     <button
                         className={styles['create-button']}
-                        onClick={() => setIsCreateModalOpen(true)}
+                        onClick={() => handleOnClick()}
                     >
                         Create New Orchid
                     </button>
