@@ -1,10 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Container, Toast } from 'react-bootstrap';
+import { Button, Container, Toast, Spinner } from 'react-bootstrap';
 import { useTheme } from '../context/ThemeContext';
 import { listOfOrchids } from '../data/ListOfOrchids';
 import Layout from '../Layout/Layout';
 import OrchidFormModal from '../component/OrchidCard/OrchidFormModal';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { OrchidService } from '../services/orchidService';
 import { Orchid } from '../model.ts/orchids';
 
@@ -17,21 +17,42 @@ const OrchidDetailPage = () => {
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'danger'>('success');
     const [orchid, setOrchid] = useState<Orchid|undefined>();
+    const [isLoading, setIsLoading] = useState(true);
 
-    const getOrchidDetail =  async () => {
+    const getOrchidDetail = useCallback(async () => {
+        setIsLoading(true);
         try {
             const orchidDetail = await OrchidService.getOrchidById(id!);
             setOrchid(orchidDetail);
         } catch (error) {
             console.error('Error fetching orchid details:', error);
             setOrchid(undefined);
+            setToastType('danger');
+            setToastMessage('Failed to load orchid details');
+            setShowToast(true);
+        } finally {
+            setIsLoading(false);
         }
-    }
+    }, [id, setToastType, setToastMessage, setShowToast]);
 
     useEffect(() => {
         getOrchidDetail();
+    }, [getOrchidDetail]);
+
+    if (isLoading) {
+        return (
+            <Layout>
+                <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
+                    <div className="text-center">
+                        <Spinner animation="border" role="status" variant={isLightTheme ? "dark" : "light"}>
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                        <p className={`mt-3 ${!isLightTheme && 'text-white'}`}>Loading orchid details...</p>
+                    </div>
+                </Container>
+            </Layout>
+        );
     }
-    , [id]);
 
     if (!orchid) {
         return (
