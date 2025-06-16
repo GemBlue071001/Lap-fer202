@@ -4,8 +4,9 @@ import { useTheme } from '../context/ThemeContext';
 import { listOfOrchids } from '../data/ListOfOrchids';
 import Layout from '../Layout/Layout';
 import OrchidFormModal from '../component/OrchidCard/OrchidFormModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { OrchidService } from '../services/orchidService';
+import { Orchid } from '../model.ts/orchids';
 
 const OrchidDetailPage = () => {
     const { id } = useParams();
@@ -15,8 +16,22 @@ const OrchidDetailPage = () => {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'danger'>('success');
+    const [orchid, setOrchid] = useState<Orchid|undefined>();
 
-    const orchid = listOfOrchids.find(o => o.id === (id));
+    const getOrchidDetail =  async () => {
+        try {
+            const orchidDetail = await OrchidService.getOrchidById(id!);
+            setOrchid(orchidDetail);
+        } catch (error) {
+            console.error('Error fetching orchid details:', error);
+            setOrchid(undefined);
+        }
+    }
+
+    useEffect(() => {
+        getOrchidDetail();
+    }
+    , [id]);
 
     if (!orchid) {
         return (
