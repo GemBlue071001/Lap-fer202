@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Container } from 'react-bootstrap';
+import { Button, Container, Toast } from 'react-bootstrap';
 import { useTheme } from '../context/ThemeContext';
 import { listOfOrchids } from '../data/ListOfOrchids';
 import Layout from '../Layout/Layout';
@@ -12,6 +12,9 @@ const OrchidDetailPage = () => {
     const navigate = useNavigate();
     const { isLightTheme } = useTheme();
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'danger'>('success');
 
     const orchid = listOfOrchids.find(o => o.id === (id));
 
@@ -64,8 +67,20 @@ const OrchidDetailPage = () => {
                                 Update
                             </Button>
                             <Button
-                                variant={isLightTheme ? 'secondary' : 'light'}
-                                onClick={() => OrchidService.deleteOrchids(orchid.id)}
+                                variant="danger"
+                                onClick={async () => {
+                                    try {
+                                        await OrchidService.deleteOrchids(orchid.id);
+                                        setToastType('success');
+                                        setToastMessage('Orchid successfully deleted');
+                                        setShowToast(true);
+                                        setTimeout(() => navigate('/'), 2000);
+                                    } catch (error) {
+                                        setToastType('danger');
+                                        setToastMessage('Failed to delete orchid');
+                                        setShowToast(true);
+                                    }
+                                }}
                                 className="mt-3"
                             >
                                 Delete
@@ -81,13 +96,41 @@ const OrchidDetailPage = () => {
                     onClose={() => setIsUpdateModalOpen(false)}
                     onSubmitSuccess={() => {
                         setIsUpdateModalOpen(false);
-                        // You might want to refresh the data here
-                        window.location.reload();
+                        setToastType('success');
+                        setToastMessage('Orchid successfully updated');
+                        setShowToast(true);
+                        setTimeout(() => window.location.reload(), 2000);
                     }}
                     initialData={orchid}
                     mode="update"
                 />
             )}
+            
+            <div
+                style={{
+                    position: 'fixed',
+                    top: 20,
+                    right: 20,
+                    zIndex: 9999
+                }}
+            >
+                <Toast
+                    show={showToast}
+                    onClose={() => setShowToast(false)}
+                    delay={3000}
+                    autohide
+                    bg={toastType}
+                >
+                    <Toast.Header>
+                        <strong className="me-auto">
+                            {toastType === 'success' ? 'Success' : 'Error'}
+                        </strong>
+                    </Toast.Header>
+                    <Toast.Body className={toastType === 'success' ? 'text-white' : ''}>
+                        {toastMessage}
+                    </Toast.Body>
+                </Toast>
+            </div>
         </Layout>
     );
 };
