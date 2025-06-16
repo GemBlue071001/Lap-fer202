@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { CiLight } from "react-icons/ci";
 import { MdDarkMode } from "react-icons/md";
 import { useTheme } from "../../context/ThemeContext";
+import { GoogleLogin } from "@react-oauth/google";
 
 const TopNavigation = () => {
     const { isLightTheme, toggleTheme } = useTheme();
@@ -22,8 +23,11 @@ const TopNavigation = () => {
                         <Nav.Link onClick={toggleTheme}>
                             {isLightTheme ? (<CiLight size={24} />) : (<MdDarkMode size={24} />)}
                         </Nav.Link>
-                        <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                        <Nav.Link as={Link} to="/signup">Sign Up</Nav.Link>
+                        <Nav.Link>
+                            <GoogleLogin onSuccess={()=>{}} onError={()=> {}}/>
+                        </Nav.Link>
+
+
                     </Nav>
                 </Navbar.Collapse>
             </Container>

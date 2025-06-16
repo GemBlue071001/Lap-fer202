@@ -4,6 +4,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ThemeProvider } from "./context/ThemeContext";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+const CLIENT_ID = '40348403460-e0iuqur9kdjp3aeaoj920i6h2ntiogqv.apps.googleusercontent.com'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -11,7 +14,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ThemeProvider>
-      <App />
+      <GoogleOAuthProvider clientId={CLIENT_ID}>
+        <App />
+      </GoogleOAuthProvider>
     </ThemeProvider>
   </React.StrictMode>
 );
