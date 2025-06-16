@@ -20,7 +20,7 @@ const TopNavigation = () => {
                         <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
                     </Nav>
                     <Nav>
-                        <Nav.Link onClick={toggleTheme}>
+                        <Nav.Link onClick={toggleTheme} style={{marginTop: '8px'}}>
                             {isLightTheme ? (<CiLight size={24} />) : (<MdDarkMode size={24} />)}
                         </Nav.Link>
                         <Nav.Link>
