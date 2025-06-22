@@ -6,12 +6,15 @@ import { Orchid } from "../../model.ts/orchids"
 import CreateOrchidModal from "../../component/OrchidCard/CreateOrchidModal"
 import appLocalStorage from "../../util/appLocalStorage"
 import { localKeyItem } from "../../util/localKeyItem"
-import { Spinner } from "react-bootstrap"
+import { Form, InputGroup, Spinner } from "react-bootstrap"
+import { FiSearch } from "react-icons/fi";
 
 const OrichidViewList = () => {
     const [orchids, setOrchids] = useState<Orchid[]>();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [loading, setLoading] = useState<boolean>(true)
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredOrchids, setFilteredOrchids] = useState<Orchid[]>();
 
     const getListOfOrchidsAsync = async () => {
         const orchids = await OrchidService.getOrchids();
@@ -31,6 +34,11 @@ const OrichidViewList = () => {
         }
     }
 
+    const handleSearch = (value: string) => {
+        setSearchTerm(value);
+        console.log("Search Term: ", value);
+    };
+
     useEffect(() => {
         getListOfOrchidsAsync()
     }, [])
@@ -47,15 +55,30 @@ const OrichidViewList = () => {
                     <div>
                         <div className={styles['list-header']}>
                             <h1>Orchid Collection</h1>
-                            <button
+                            {/* <button
                                 className={styles['create-button']}
                                 onClick={() => handleOnClick()}
                             >
                                 Create New Orchid
-                            </button>
+                            </button> */}
+                            <InputGroup className="mb-3" style={{ maxWidth: '400px' }}>
+                                <Form.Control
+                                    aria-label="Search"
+                                    placeholder="Search orchids"
+                                    value={searchTerm}
+                                    onChange={e => handleSearch(e.target.value)}
+                                />
+                                <InputGroup.Text
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => handleSearch(searchTerm)}
+                                >
+                                    <FiSearch />
+                                </InputGroup.Text>
+                            </InputGroup>
+                            
                         </div>
                         <div className={styles['list-view-container']}>
-                            {orchids?.map((orchid) => (
+                            {(filteredOrchids ?? orchids)?.map((orchid) => (
                                 <div className={styles['card-wrapper']} key={orchid.id}>
                                     <OrchidsCard {...orchid} />
                                 </div>
