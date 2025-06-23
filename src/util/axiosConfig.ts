@@ -2,7 +2,8 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 // Create custom axios instance
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3000/', // default base URL
+    // baseURL: process.env.REACT_APP_API_URL || 'https://684c4899ed2578be881e5b44.mockapi.io/api',
+    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3000',
     timeout: 10000, // 10 seconds
     headers: {
         'Content-Type': 'application/json'
