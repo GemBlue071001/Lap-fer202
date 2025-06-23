@@ -52,7 +52,7 @@ const OrichidViewList = () => {
                     </div>
                 ) :
                 (
-                    <div>
+                    <div className={styles['orchid-container']}>
                         <div className={styles['list-header']}>
                             <h1>Orchid Collection</h1>
                             {/* <button
@@ -61,7 +61,7 @@ const OrichidViewList = () => {
                             >
                                 Create New Orchid
                             </button> */}
-                            <InputGroup className="mb-3" style={{ maxWidth: '400px' }}>
+                            <InputGroup className={`mb-3 ${styles['search-container']}`}>
                                 <Form.Control
                                     aria-label="Search"
                                     placeholder="Search orchids"
@@ -77,7 +77,7 @@ const OrichidViewList = () => {
                             </InputGroup>
                             
                         </div>
-                        <div className={styles['list-view-container']}>
+                        <div className={`${styles['list-view-container']} ${styles['grid-alignment-fix']}`}>
                             {(filteredOrchids ?? orchids)?.map((orchid) => (
                                 <div className={styles['card-wrapper']} key={orchid.id}>
                                     <OrchidsCard {...orchid} />

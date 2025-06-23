@@ -12,13 +12,13 @@ export const OrchidService = {
 
     getOrchidById: async (id: string) => {
         // Example API call to fetch a single orchid by ID
-        const response: Orchid = await api.get(`/orchid/${id}`);
+        const response: Orchid = await api.get(`/orchids/${id}`);
         return response;
     },
 
     createOrchids: async (newOrchid: Orchid) => {
         // Example API call to fetch orchids
-        const response = await api.post('/orchid');
+        const response = await api.post('/orchid', newOrchid);
 
         return response;
     },
