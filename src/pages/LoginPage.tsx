@@ -1,7 +1,33 @@
-import React from "react";
-import { Box, Button, TextField, Typography, Paper } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Button, TextField, Typography, Paper, Snackbar, Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const res = await fetch(
+                `http://localhost:3000/user?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+            );
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+                navigate("/");
+            } else {
+                setError("Invalid email or password");
+                setOpen(true);
+            }
+        } catch {
+            setError("Login failed. Please try again.");
+            setOpen(true);
+        }
+    };
+
     return (
         <Box
             sx={{
@@ -16,12 +42,18 @@ const LoginPage = () => {
                 <Typography variant="h5" component="h1" gutterBottom align="center">
                     Login
                 </Typography>
-                <Box component="form" sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+                <Box
+                    component="form"
+                    sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}
+                    onSubmit={handleSubmit}
+                >
                     <TextField
                         label="Email"
                         variant="outlined"
                         fullWidth
                         autoComplete="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
                     />
                     <TextField
                         label="Password"
@@ -29,17 +61,25 @@ const LoginPage = () => {
                         variant="outlined"
                         fullWidth
                         autoComplete="current-password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
                     />
                     <Button
                         variant="contained"
                         color="primary"
                         fullWidth
                         sx={{ mt: 2 }}
+                        type="submit"
                     >
                         Login
                     </Button>
                 </Box>
             </Paper>
+            <Snackbar open={open} autoHideDuration={4000} onClose={() => setOpen(false)}>
+                <Alert severity="error" onClose={() => setOpen(false)} sx={{ width: "100%" }}>
+                    {error}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
