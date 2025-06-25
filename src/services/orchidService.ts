@@ -3,16 +3,16 @@ import api from "../util/axiosConfig";
 
 export const OrchidService = {
     // Define your service methods here
-    getOrchids: async () => {
+    getOrchids: async (searchString?:string) => {
         // Example API call to fetch orchids
-        const response: Orchid[] = await api.get('/orchid');
+        const response: Orchid[] = await api.get(`/orchid?q=${searchString}`);
 
         return response;
     },
 
     getOrchidById: async (id: string) => {
         // Example API call to fetch a single orchid by ID
-        const response: Orchid = await api.get(`/orchids/${id}`);
+        const response: Orchid = await api.get(`/orchid/${id}`);
         return response;
     },
 

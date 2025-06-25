@@ -42,7 +42,10 @@ const TopNavigation = () => {
                             </>)
                                 :
                                 (<>
-                                   <GoogleLogin onSuccess={(credentialResponse) => { handleOnLoginSuccess(credentialResponse) }} onError={() => { }} />
+                                   {/* <GoogleLogin onSuccess={(credentialResponse) => { handleOnLoginSuccess(credentialResponse) }} onError={() => { }} /> */}
+                                   <Nav.Link onClick={handleOnLogout}>
+                                    Login
+                                </Nav.Link>
                                 </>)
                             }
 

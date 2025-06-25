@@ -96,5 +96,13 @@
             "category": "category 12",
             "id": "12"
         }
+    ],
+    "user":[
+        {
+            "email": "trinhtam2001@gmail.com",
+            "name": "trinhtam",
+            "password" : "trinhtam",
+            "role": "user"
+        }
     ]
 }

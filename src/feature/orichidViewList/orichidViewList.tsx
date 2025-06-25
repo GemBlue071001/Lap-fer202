@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react"
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useCallback, useEffect, useState } from "react"
 import OrchidsCard from "../../component/OrchidCard/OrchidCard"
 import styles from "./OrichidViewList.module.css"
 import { OrchidService } from "../../services/orchidService"
 import { Orchid } from "../../model.ts/orchids"
 import CreateOrchidModal from "../../component/OrchidCard/CreateOrchidModal"
-import appLocalStorage from "../../util/appLocalStorage"
-import { localKeyItem } from "../../util/localKeyItem"
 import { Form, InputGroup, Spinner } from "react-bootstrap"
 import { FiSearch } from "react-icons/fi";
 
@@ -16,32 +15,31 @@ const OrichidViewList = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredOrchids, setFilteredOrchids] = useState<Orchid[]>();
 
-    const getListOfOrchidsAsync = async () => {
-        const orchids = await OrchidService.getOrchids();
+    const getListOfOrchidsAsync = useCallback(async () => {
+        const orchids = await OrchidService.getOrchids(searchTerm);
         setOrchids(orchids);
         setLoading(false)
-    }
+    },[searchTerm])
 
-    const handleOnClick = () => {
-        var storedCredential = appLocalStorage.getItem(localKeyItem.userCredential);
-        console.log("Stored Credential: ", storedCredential);
+    // const handleOnClick = () => {
+    //     var storedCredential = appLocalStorage.getItem(localKeyItem.userCredential);
+    //     console.log("Stored Credential: ", storedCredential);
 
-        if (!storedCredential) {
-            alert("Please login to create a new orchid.");
-            return;
-        } else {
-            setIsCreateModalOpen(true)
-        }
-    }
+    //     if (!storedCredential) {
+    //         alert("Please login to create a new orchid.");
+    //         return;
+    //     } else {
+    //         setIsCreateModalOpen(true)
+    //     }
+    // }
 
     const handleSearch = (value: string) => {
         setSearchTerm(value);
-        console.log("Search Term: ", value);
     };
 
     useEffect(() => {
         getListOfOrchidsAsync()
-    }, [])
+    }, [getListOfOrchidsAsync, searchTerm])
 
     return (
         <>
