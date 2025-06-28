@@ -51,6 +51,10 @@
         {
           "userId": 1,
           "content": "ahahahahhahaah"
+        },
+         {
+          "userId": 3,
+          "content": "423434"
         }
       ]
     },
@@ -159,6 +163,13 @@
       "name": "admin",
       "password": "admin",
       "role": "admin"
+    },
+    {
+      "id": 3,
+      "email": "duy@gmail.com",
+      "name": "duy",
+      "password": "duy",
+      "role": "user"
     }
   ]
 }

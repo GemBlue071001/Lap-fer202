@@ -23,6 +23,7 @@ const OrchidDetailPage = () => {
     const [comment, setComment] = useState('');
     const [isSubmittingComment, setIsSubmittingComment] = useState(false);
     const commentLoaded = useRef(false);
+    const [userClearedComment, setUserClearedComment] = useState(false);
 
     const userInfoString: User = appLocalStorage.getItem(localKeyItem.userInfo);
 
@@ -102,8 +103,9 @@ const OrchidDetailPage = () => {
             // Clear comment input
             setComment('');
             
-            // Reset the commentLoaded ref to allow loading the updated comment
+            // Reset the state to allow loading comments in the future
             commentLoaded.current = false;
+            setUserClearedComment(false);
             
             // Refresh orchid details
             getOrchidDetail();
@@ -122,14 +124,14 @@ const OrchidDetailPage = () => {
 
     // Set comment input value if user has an existing comment (only on initial load)
     useEffect(() => {
-        if (orchid && orchid.comments && userInfoString && userInfoString.id && !commentLoaded.current) {
+        if (orchid && orchid.comments && userInfoString && userInfoString.id && !commentLoaded.current && !userClearedComment) {
             const existingComment = orchid.comments.find(c => c.userId === userInfoString.id);
             if (existingComment) {
                 setComment(existingComment.content);
                 commentLoaded.current = true;
             }
         }
-    }, [orchid, userInfoString]);
+    }, [orchid, userInfoString, userClearedComment]);
 
     if (isLoading) {
         return (
@@ -268,7 +270,7 @@ const OrchidDetailPage = () => {
                                                 size="sm"
                                                 onClick={() => {
                                                     setComment('');
-                                                    commentLoaded.current = false;
+                                                    setUserClearedComment(true);
                                                 }}
                                             >
                                                 Clear
