@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography, Paper, Snackbar, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { userService } from "../services/userService";
+import appLocalStorage from "../util/appLocalStorage";
+import { localKeyItem } from "../util/localKeyItem";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
@@ -12,11 +15,13 @@ const LoginPage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const res = await fetch(
-                `http://localhost:3000/user?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
-            );
-            const data = await res.json();
-            if (Array.isArray(data) && data.length > 0) {
+            // const res = await fetch(
+            //     `http://localhost:3000/user?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+            // );
+            const users = await userService.login(email, password);
+            // const data = await res.json();
+            if (Array.isArray(users) && users.length === 1) {
+                appLocalStorage.setItem(localKeyItem.userInfo, users[0])
                 navigate("/");
             } else {
                 setError("Invalid email or password");

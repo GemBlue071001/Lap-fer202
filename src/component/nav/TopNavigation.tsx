@@ -37,13 +37,13 @@ const TopNavigation = () => {
                             {credential ? 
                             (<>
                                 <Nav.Link onClick={handleOnLogout}>
-                                    Log out
+                                    Logout
                                 </Nav.Link>
                             </>)
                                 :
                                 (<>
                                    {/* <GoogleLogin onSuccess={(credentialResponse) => { handleOnLoginSuccess(credentialResponse) }} onError={() => { }} /> */}
-                                   <Nav.Link onClick={handleOnLogout}>
+                                   <Nav.Link as={Link} to="/login">
                                     Login
                                 </Nav.Link>
                                 </>)

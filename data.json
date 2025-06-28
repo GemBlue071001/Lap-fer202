@@ -10,7 +10,13 @@
             "color": "pink",
             "numberOfLikes": 192,
             "origin": "Taiwan",
-            "category": "Cattleya"
+            "category": "Cattleya",
+            "comments": [
+                {
+                    "userId": 1,
+                    "content": "nice one"
+                }
+            ]
         },
         {
             "id": "3",
@@ -22,7 +28,13 @@
             "color": "pink",
             "numberOfLikes": 192,
             "origin": "Taiwan",
-            "category": "Cattleya"
+            "category": "Cattleya",
+            "comments": [
+                {
+                    "userId": 1,
+                    "content": "nice one"
+                }
+            ]
         },
         {
             "id": "7",
@@ -34,7 +46,13 @@
             "color": "pink",
             "numberOfLikes": 192,
             "origin": "Taiwan",
-            "category": "Cattleya"
+            "category": "Cattleya",
+            "comments": [
+                {
+                    "userId": 1,
+                    "content": "nice one"
+                }
+            ]
         },
         {
             "id": "8",
@@ -46,7 +64,13 @@
             "color": "pink",
             "numberOfLikes": 192,
             "origin": "Taiwan",
-            "category": "Cattleya"
+            "category": "Cattleya",
+            "comments": [
+                {
+                    "userId": 1,
+                    "content": "nice one"
+                }
+            ]
         },
         {
             "id": "9",
@@ -58,7 +82,13 @@
             "color": "pink",
             "numberOfLikes": 192,
             "origin": "Taiwan",
-            "category": "Cattleya"
+            "category": "Cattleya",
+            "comments": [
+                {
+                    "userId": 1,
+                    "content": "nice one"
+                }
+            ]
         },
         {
             "id": "10",
@@ -70,7 +100,13 @@
             "color": "pink",
             "numberOfLikes": 192,
             "origin": "Taiwan",
-            "category": "Cattleya"
+            "category": "Cattleya",
+            "comments": [
+                {
+                    "userId": 1,
+                    "content": "nice one"
+                }
+            ]
         },
         {
             "id": "11",
@@ -82,7 +118,13 @@
             "color": "pink",
             "numberOfLikes": 192,
             "origin": "Taiwan",
-            "category": "Cattleya"
+            "category": "Cattleya",
+            "comments": [
+                {
+                    "userId": 1,
+                    "content": "nice one"
+                }
+            ]
         },
         {
             "name": "name 12",
@@ -94,15 +136,29 @@
             "numberOfLikes": 86,
             "origin": "origin 12",
             "category": "category 12",
-            "id": "12"
+            "id": "12",
+            "comments": [
+                {
+                    "userId": 1,
+                    "content": "nice one"
+                }
+            ]
         }
     ],
-    "user":[
+    "user": [
         {
+            "id": 1,
             "email": "trinhtam2001@gmail.com",
             "name": "trinhtam",
-            "password" : "trinhtam",
+            "password": "trinhtam",
             "role": "user"
+        },
+        {
+            "id": 2,
+            "email": "admin",
+            "name": "admin",
+            "password": "admin",
+            "role": "admin"
         }
     ]
 }

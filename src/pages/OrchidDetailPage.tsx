@@ -6,6 +6,9 @@ import OrchidFormModal from '../component/OrchidCard/OrchidFormModal';
 import { useEffect, useState, useCallback } from 'react';
 import { OrchidService } from '../services/orchidService';
 import { Orchid } from '../model.ts/orchids';
+import appLocalStorage from '../util/appLocalStorage';
+import { User } from '../model.ts/user';
+import { localKeyItem } from '../util/localKeyItem';
 
 const OrchidDetailPage = () => {
     const { id } = useParams();
@@ -15,8 +18,10 @@ const OrchidDetailPage = () => {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'danger'>('success');
-    const [orchid, setOrchid] = useState<Orchid|undefined>();
+    const [orchid, setOrchid] = useState<Orchid | undefined>();
     const [isLoading, setIsLoading] = useState(true);
+
+    const userInfoString: User = appLocalStorage.getItem(localKeyItem.userInfo);
 
     const getOrchidDetail = useCallback(async () => {
         setIsLoading(true);
@@ -86,7 +91,7 @@ const OrchidDetailPage = () => {
                             <p><strong>Likes:</strong> {orchid.numberOfLikes} ❤️</p>
                             <p><strong>Description:</strong> Beautiful {orchid.name} orchid species</p>
                         </div>
-                        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'start' , gap: '20px'}}>
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', gap: '20px' }}>
                             <Button
                                 variant={isLightTheme ? 'secondary' : 'light'}
                                 onClick={() => navigate('/')}
@@ -94,32 +99,36 @@ const OrchidDetailPage = () => {
                             >
                                 Back to Home
                             </Button>
-                            <Button
-                                variant={isLightTheme ? 'secondary' : 'light'}
-                                onClick={() => setIsUpdateModalOpen(true)}
-                                className="mt-3"
-                            >
-                                Update
-                            </Button>
-                            <Button
-                                variant="danger"
-                                onClick={async () => {
-                                    try {
-                                        await OrchidService.deleteOrchids(orchid.id);
-                                        setToastType('success');
-                                        setToastMessage('Orchid successfully deleted');
-                                        setShowToast(true);
-                                        setTimeout(() => navigate('/'), 2000);
-                                    } catch (error) {
-                                        setToastType('danger');
-                                        setToastMessage('Failed to delete orchid');
-                                        setShowToast(true);
-                                    }
-                                }}
-                                className="mt-3"
-                            >
-                                Delete
-                            </Button>
+                            {userInfoString.role === "admin" && (<>
+                                <Button
+                                    variant={isLightTheme ? 'secondary' : 'light'}
+                                    onClick={() => setIsUpdateModalOpen(true)}
+                                    className="mt-3"
+                                >
+                                    Update
+                                </Button></>)}
+
+
+                            {userInfoString.role === "admin" && (<>
+                                <Button
+                                    variant="danger"
+                                    onClick={async () => {
+                                        try {
+                                            await OrchidService.deleteOrchids(orchid.id);
+                                            setToastType('success');
+                                            setToastMessage('Orchid successfully deleted');
+                                            setShowToast(true);
+                                            setTimeout(() => navigate('/'), 2000);
+                                        } catch (error) {
+                                            setToastType('danger');
+                                            setToastMessage('Failed to delete orchid');
+                                            setShowToast(true);
+                                        }
+                                    }}
+                                    className="mt-3"
+                                >
+                                    Delete
+                                </Button></>)}
                         </div>
 
                     </div>
@@ -140,7 +149,7 @@ const OrchidDetailPage = () => {
                     mode="update"
                 />
             )}
-            
+
             <div
                 style={{
                     position: 'fixed',

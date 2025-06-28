@@ -7,6 +7,9 @@ import { Orchid } from "../../model.ts/orchids"
 import CreateOrchidModal from "../../component/OrchidCard/CreateOrchidModal"
 import { Form, InputGroup, Spinner } from "react-bootstrap"
 import { FiSearch } from "react-icons/fi";
+import appLocalStorage from "../../util/appLocalStorage"
+import { localKeyItem } from "../../util/localKeyItem"
+import { User } from "../../model.ts/user"
 
 const OrichidViewList = () => {
     const [orchids, setOrchids] = useState<Orchid[]>();
@@ -15,23 +18,20 @@ const OrichidViewList = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredOrchids, setFilteredOrchids] = useState<Orchid[]>();
 
+   
+
+    const userInfoString: User = appLocalStorage.getItem(localKeyItem.userInfo);
+    
+
     const getListOfOrchidsAsync = useCallback(async () => {
         const orchids = await OrchidService.getOrchids(searchTerm);
         setOrchids(orchids);
         setLoading(false)
-    },[searchTerm])
+    }, [searchTerm])
 
-    // const handleOnClick = () => {
-    //     var storedCredential = appLocalStorage.getItem(localKeyItem.userCredential);
-    //     console.log("Stored Credential: ", storedCredential);
-
-    //     if (!storedCredential) {
-    //         alert("Please login to create a new orchid.");
-    //         return;
-    //     } else {
-    //         setIsCreateModalOpen(true)
-    //     }
-    // }
+    const handleOnClick = () => {
+        setIsCreateModalOpen(true)
+    }
 
     const handleSearch = (value: string) => {
         setSearchTerm(value);
@@ -53,12 +53,7 @@ const OrichidViewList = () => {
                     <div className={styles['orchid-container']}>
                         <div className={styles['list-header']}>
                             <h1>Orchid Collection</h1>
-                            {/* <button
-                                className={styles['create-button']}
-                                onClick={() => handleOnClick()}
-                            >
-                                Create New Orchid
-                            </button> */}
+
                             <InputGroup className={`mb-3 ${styles['search-container']}`}>
                                 <Form.Control
                                     aria-label="Search"
@@ -73,7 +68,16 @@ const OrichidViewList = () => {
                                     <FiSearch />
                                 </InputGroup.Text>
                             </InputGroup>
-                            
+                            {userInfoString.role === "admin" &&
+                                (<>
+                                    <button
+                                        className={styles['create-button']}
+                                        onClick={() => handleOnClick()}
+                                    >
+                                        Create New Orchid
+                                    </button>
+                                </>)}
+
                         </div>
                         <div className={`${styles['list-view-container']} ${styles['grid-alignment-fix']}`}>
                             {(filteredOrchids ?? orchids)?.map((orchid) => (

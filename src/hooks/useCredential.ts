@@ -6,7 +6,7 @@ export const useCredential = () => {
     const [credential, setCredential] = useState<string | undefined>(undefined);
 
     useEffect(() => {
-        const storedCredential = appLocalStorage.getItem(localKeyItem.userCredential);
+        const storedCredential = appLocalStorage.getItem(localKeyItem.userInfo);
         if (storedCredential) {
             setCredential(storedCredential);
         } else {
@@ -16,9 +16,9 @@ export const useCredential = () => {
 
     const updateCredential = (newCredential: string | undefined) => {
         if (newCredential) {
-            appLocalStorage.setItem(localKeyItem.userCredential, newCredential);
+            appLocalStorage.setItem(localKeyItem.userInfo, newCredential);
         } else {
-            appLocalStorage.removeItem(localKeyItem.userCredential);
+            appLocalStorage.removeItem(localKeyItem.userInfo);
         }
         setCredential(newCredential);
     };

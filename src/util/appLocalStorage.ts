@@ -1,5 +1,5 @@
 const appLocalStorage = {
-    getItem: (key: string): string | undefined => {
+    getItem: (key: string): any | undefined => {
         try {
             const value = localStorage.getItem(key);
             return value ? JSON.parse(value) : undefined;
