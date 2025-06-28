@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Container, Toast, Spinner } from 'react-bootstrap';
+import { Button, Container, Toast, Spinner, Form, Card, Alert } from 'react-bootstrap';
 import { useTheme } from '../context/ThemeContext';
 import Layout from '../Layout/Layout';
 import OrchidFormModal from '../component/OrchidCard/OrchidFormModal';
@@ -20,6 +20,8 @@ const OrchidDetailPage = () => {
     const [toastType, setToastType] = useState<'success' | 'danger'>('success');
     const [orchid, setOrchid] = useState<Orchid | undefined>();
     const [isLoading, setIsLoading] = useState(true);
+    const [comment, setComment] = useState('');
+    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
     const userInfoString: User = appLocalStorage.getItem(localKeyItem.userInfo);
 
@@ -38,6 +40,65 @@ const OrchidDetailPage = () => {
             setIsLoading(false);
         }
     }, [id, setToastType, setToastMessage, setShowToast]);
+
+    const handleCommentSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!userInfoString || !userInfoString.id) {
+            setToastType('danger');
+            setToastMessage('You must be logged in to comment');
+            setShowToast(true);
+            return;
+        }
+        
+        if (!comment.trim()) {
+            setToastType('danger');
+            setToastMessage('Comment cannot be empty');
+            setShowToast(true);
+            return;
+        }
+        
+        setIsSubmittingComment(true);
+        
+        try {
+            // Get the current orchid data
+            const currentOrchid = { ...orchid };
+            
+            // Add the new comment
+            if (!currentOrchid.comments) {
+                currentOrchid.comments = [];
+            }
+            
+            currentOrchid.comments.push({
+                userId: userInfoString.id,
+                content: comment.trim()
+            });
+            
+            // Update the orchid with the new comment
+            if (currentOrchid.id) {
+                await OrchidService.updateOrchids(currentOrchid.id, currentOrchid);
+            } else {
+                throw new Error('Orchid ID is missing');
+            }
+            
+            // Show success message
+            setToastType('success');
+            setToastMessage('Comment added successfully');
+            setShowToast(true);
+            
+            // Clear comment input
+            setComment('');
+            
+            // Refresh orchid details
+            getOrchidDetail();
+        } catch (error) {
+            setToastType('danger');
+            setToastMessage('Failed to add comment');
+            setShowToast(true);
+        } finally {
+            setIsSubmittingComment(false);
+        }
+    };
 
     useEffect(() => {
         getOrchidDetail();
@@ -131,6 +192,59 @@ const OrchidDetailPage = () => {
                                 </Button></>)}
                         </div>
 
+                    </div>
+                </div>
+                
+                {/* Comments Section */}
+                <div className="row mt-5">
+                    <div className="col-12">
+                        <h3>Comments</h3>
+                        
+                        {/* Comment List */}
+                        <div className="mt-3">
+                            {orchid.comments && orchid.comments.length > 0 ? (
+                                orchid.comments.map((comment, index) => (
+                                    <Card key={index} className={`mb-3 ${isLightTheme ? 'bg-white' : 'bg-dark text-white'}`}>
+                                        <Card.Body>
+                                            <Card.Title>User #{comment.userId}</Card.Title>
+                                            <Card.Text>{comment.content}</Card.Text>
+                                        </Card.Body>
+                                    </Card>
+                                ))
+                            ) : (
+                                <p>No comments yet. Be the first to comment!</p>
+                            )}
+                        </div>
+                        
+                        {/* Add Comment Form */}
+                        <div className="mt-4">
+                            <h4>Add a Comment</h4>
+                            {userInfoString && userInfoString.id ? (
+                                <Form onSubmit={handleCommentSubmit}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Control
+                                            as="textarea"
+                                            rows={3}
+                                            placeholder="Write your comment here..."
+                                            value={comment}
+                                            onChange={(e) => setComment(e.target.value)}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Button 
+                                        variant={isLightTheme ? "primary" : "light"} 
+                                        type="submit"
+                                        disabled={isSubmittingComment}
+                                    >
+                                        {isSubmittingComment ? 'Submitting...' : 'Submit Comment'}
+                                    </Button>
+                                </Form>
+                            ) : (
+                                <Alert variant="info">
+                                    Please <Button variant="link" onClick={() => navigate('/login')}>login</Button> to add a comment.
+                                </Alert>
+                            )}
+                        </div>
                     </div>
                 </div>
             </Container>

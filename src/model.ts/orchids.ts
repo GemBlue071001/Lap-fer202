@@ -1,3 +1,8 @@
+export interface Comment {
+    userId: number;
+    content: string;
+}
+
 export interface Orchid {
     id: string;
     name: string;
@@ -9,5 +14,6 @@ export interface Orchid {
     numberOfLikes: number;
     origin: string;
     category: string;
+    comments?: Comment[];
 }
 
