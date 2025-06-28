@@ -3,7 +3,7 @@ import { Button, Container, Toast, Spinner, Form, Card, Alert } from 'react-boot
 import { useTheme } from '../context/ThemeContext';
 import Layout from '../Layout/Layout';
 import OrchidFormModal from '../component/OrchidCard/OrchidFormModal';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { OrchidService } from '../services/orchidService';
 import { Orchid } from '../model.ts/orchids';
 import appLocalStorage from '../util/appLocalStorage';
@@ -22,6 +22,7 @@ const OrchidDetailPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [comment, setComment] = useState('');
     const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+    const commentLoaded = useRef(false);
 
     const userInfoString: User = appLocalStorage.getItem(localKeyItem.userInfo);
 
@@ -69,10 +70,23 @@ const OrchidDetailPage = () => {
                 currentOrchid.comments = [];
             }
             
-            currentOrchid.comments.push({
-                userId: userInfoString.id,
-                content: comment.trim()
-            });
+            // Check if user already has a comment
+            const existingCommentIndex = currentOrchid.comments.findIndex(
+                comment => comment.userId === userInfoString.id
+            );
+            
+            if (existingCommentIndex !== -1) {
+                // Update existing comment
+                currentOrchid.comments[existingCommentIndex].content = comment.trim();
+                setToastMessage('Your comment has been updated');
+            } else {
+                // Add new comment
+                currentOrchid.comments.push({
+                    userId: userInfoString.id,
+                    content: comment.trim()
+                });
+                setToastMessage('Comment added successfully');
+            }
             
             // Update the orchid with the new comment
             if (currentOrchid.id) {
@@ -83,11 +97,13 @@ const OrchidDetailPage = () => {
             
             // Show success message
             setToastType('success');
-            setToastMessage('Comment added successfully');
             setShowToast(true);
             
             // Clear comment input
             setComment('');
+            
+            // Reset the commentLoaded ref to allow loading the updated comment
+            commentLoaded.current = false;
             
             // Refresh orchid details
             getOrchidDetail();
@@ -103,6 +119,17 @@ const OrchidDetailPage = () => {
     useEffect(() => {
         getOrchidDetail();
     }, [getOrchidDetail]);
+
+    // Set comment input value if user has an existing comment (only on initial load)
+    useEffect(() => {
+        if (orchid && orchid.comments && userInfoString && userInfoString.id && !commentLoaded.current) {
+            const existingComment = orchid.comments.find(c => c.userId === userInfoString.id);
+            if (existingComment) {
+                setComment(existingComment.content);
+                commentLoaded.current = true;
+            }
+        }
+    }, [orchid, userInfoString]);
 
     if (isLoading) {
         return (
@@ -203,14 +230,26 @@ const OrchidDetailPage = () => {
                         {/* Comment List */}
                         <div className="mt-3">
                             {orchid.comments && orchid.comments.length > 0 ? (
-                                orchid.comments.map((comment, index) => (
-                                    <Card key={index} className={`mb-3 ${isLightTheme ? 'bg-white' : 'bg-dark text-white'}`}>
-                                        <Card.Body>
-                                            <Card.Title>User #{comment.userId}</Card.Title>
-                                            <Card.Text>{comment.content}</Card.Text>
-                                        </Card.Body>
-                                    </Card>
-                                ))
+                                orchid.comments.map((comment, index) => {
+                                    const isUserComment = userInfoString && userInfoString.id === comment.userId;
+                                    return (
+                                        <Card 
+                                            key={index} 
+                                            className={`mb-3 ${isLightTheme ? 'bg-white' : 'bg-dark text-white'} ${isUserComment ? 'border-primary' : ''}`}
+                                        >
+                                            <Card.Body>
+                                                <Card.Title>
+                                                    {isUserComment ? (
+                                                        <>Your Comment <span className="text-primary">(you)</span></>
+                                                    ) : (
+                                                        `User #${comment.userId}`
+                                                    )}
+                                                </Card.Title>
+                                                <Card.Text>{comment.content}</Card.Text>
+                                            </Card.Body>
+                                        </Card>
+                                    );
+                                })
                             ) : (
                                 <p>No comments yet. Be the first to comment!</p>
                             )}
@@ -220,25 +259,46 @@ const OrchidDetailPage = () => {
                         <div className="mt-4">
                             <h4>Add a Comment</h4>
                             {userInfoString && userInfoString.id ? (
-                                <Form onSubmit={handleCommentSubmit}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Control
-                                            as="textarea"
-                                            rows={3}
-                                            placeholder="Write your comment here..."
-                                            value={comment}
-                                            onChange={(e) => setComment(e.target.value)}
-                                            required
-                                        />
-                                    </Form.Group>
-                                    <Button 
-                                        variant={isLightTheme ? "primary" : "light"} 
-                                        type="submit"
-                                        disabled={isSubmittingComment}
-                                    >
-                                        {isSubmittingComment ? 'Submitting...' : 'Submit Comment'}
-                                    </Button>
-                                </Form>
+                                <>
+                                    {orchid.comments && orchid.comments.find(c => c.userId === userInfoString.id) ? (
+                                        <div className="d-flex justify-content-between align-items-center mb-2">
+                                            <p className="text-info mb-0">You already have a comment. Submitting will update your existing comment.</p>
+                                            <Button 
+                                                variant="outline-secondary" 
+                                                size="sm"
+                                                onClick={() => {
+                                                    setComment('');
+                                                    commentLoaded.current = false;
+                                                }}
+                                            >
+                                                Clear
+                                            </Button>
+                                        </div>
+                                    ) : null}
+                                    <Form onSubmit={handleCommentSubmit}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Control
+                                                as="textarea"
+                                                rows={3}
+                                                placeholder="Write your comment here..."
+                                                value={comment}
+                                                onChange={(e) => setComment(e.target.value)}
+                                                required
+                                            />
+                                        </Form.Group>
+                                        <Button 
+                                            variant={isLightTheme ? "primary" : "light"} 
+                                            type="submit"
+                                            disabled={isSubmittingComment}
+                                        >
+                                            {isSubmittingComment ? 'Submitting...' : (
+                                                orchid.comments && orchid.comments.find(c => c.userId === userInfoString.id) 
+                                                ? 'Update Comment' 
+                                                : 'Submit Comment'
+                                            )}
+                                        </Button>
+                                    </Form>
+                                </>
                             ) : (
                                 <Alert variant="info">
                                     Please <Button variant="link" onClick={() => navigate('/login')}>login</Button> to add a comment.
