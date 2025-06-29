@@ -68,7 +68,7 @@ const OrichidViewList = () => {
                                     <FiSearch />
                                 </InputGroup.Text>
                             </InputGroup>
-                            {userInfoString.role === "admin" &&
+                            {/* {userInfoString.role === "admin" &&
                                 (<>
                                     <button
                                         className={styles['create-button']}
@@ -76,7 +76,7 @@ const OrichidViewList = () => {
                                     >
                                         Create New Orchid
                                     </button>
-                                </>)}
+                                </>)} */}
 
                         </div>
                         <div className={`${styles['list-view-container']} ${styles['grid-alignment-fix']}`}>
