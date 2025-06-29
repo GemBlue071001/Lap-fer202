@@ -28,13 +28,6 @@ const AdminOrchidPage = () => {
     const navigate = useNavigate();
     const userInfoString: User = appLocalStorage.getItem(localKeyItem.userInfo);
 
-    // Redirect if not admin
-    useEffect(() => {
-        if (!userInfoString || userInfoString.role !== "admin") {
-            navigate("/");
-        }
-    }, [userInfoString, navigate]);
-
     const getListOfOrchidsAsync = useCallback(async () => {
         try {
             setLoading(true);

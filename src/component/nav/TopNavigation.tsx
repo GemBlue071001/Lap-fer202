@@ -22,6 +22,7 @@ const TopNavigation = () => {
 
     const handleOnLogout = () => {
         updateCredential(undefined);
+        localStorage.clear();
     }
 
     return (
@@ -44,7 +45,7 @@ const TopNavigation = () => {
                         <Nav.Link>
                             {credential ? 
                             (<>
-                                <Nav.Link onClick={handleOnLogout}>
+                                <Nav.Link onClick={handleOnLogout} as={Link} to="/">
                                     Logout
                                 </Nav.Link>
                             </>)
