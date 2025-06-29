@@ -6,10 +6,15 @@ import { MdDarkMode } from "react-icons/md";
 import { useTheme } from "../../context/ThemeContext";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useCredential } from "../../hooks/useCredential";
+import appLocalStorage from "../../util/appLocalStorage";
+import { localKeyItem } from "../../util/localKeyItem";
+import { User } from "../../model.ts/user";
 
 const TopNavigation = () => {
     const { isLightTheme, toggleTheme } = useTheme();
     const { credential, updateCredential } = useCredential();
+    const userInfoString: User = appLocalStorage.getItem(localKeyItem.userInfo);
+    const isAdmin = userInfoString && userInfoString.role === "admin";
 
     const handleOnLoginSuccess = (credentialResponse: CredentialResponse) => {
         updateCredential(credentialResponse.credential);
@@ -28,6 +33,9 @@ const TopNavigation = () => {
                     <Nav className="me-auto">
                         <Nav.Link as={Link} to="/">Home</Nav.Link>
                         <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
+                        {isAdmin && (
+                            <Nav.Link as={Link} to="/admin/orchids">Admin</Nav.Link>
+                        )}
                     </Nav>
                     <Nav>
                         <Nav.Link onClick={toggleTheme} style={{ marginTop: '8px' }}>
