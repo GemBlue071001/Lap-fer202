@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Paper, Snackbar, Alert } from "@mui/material";
+import { Box, Button, TextField, Typography, Paper, Snackbar, Alert, Divider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { userService } from "../services/userService";
 import appLocalStorage from "../util/appLocalStorage";
@@ -15,11 +15,7 @@ const LoginPage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            // const res = await fetch(
-            //     `http://localhost:3000/user?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
-            // );
             const users = await userService.login(email, password);
-            // const data = await res.json();
             if (Array.isArray(users) && users.length === 1) {
                 appLocalStorage.setItem(localKeyItem.userInfo, users[0])
                 navigate("/");
@@ -77,6 +73,17 @@ const LoginPage = () => {
                         type="submit"
                     >
                         Login
+                    </Button>
+                    
+                    <Divider sx={{ mt: 2, mb: 2 }}>Or</Divider>
+                    
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        fullWidth
+                        onClick={() => navigate("/register")}
+                    >
+                        Register
                     </Button>
                 </Box>
             </Paper>
