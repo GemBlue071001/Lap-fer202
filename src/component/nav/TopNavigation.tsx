@@ -38,21 +38,23 @@ const TopNavigation = () => {
                             {isLightTheme ? (<CiLight size={24} />) : (<MdDarkMode size={24} />)}
                         </Nav.Link>
                         <Nav.Link>
-                            {credential ? 
-                            (<>
-                                <Nav.Link as={Link} to="/profile">
-                                    Profile
-                                </Nav.Link>
-                                <Nav.Link onClick={handleOnLogout} as={Link} to="/">
-                                    Logout
-                                </Nav.Link>
-                            </>)
+                            {credential ?
+                                (<>
+                                    <div style={{display:"flex", justifyContent:"space-between"}}>
+                                        <Nav.Link as={Link} to="/profile">
+                                            Profile
+                                        </Nav.Link>
+                                        <Nav.Link onClick={handleOnLogout} as={Link} to="/">
+                                            Logout
+                                        </Nav.Link>
+                                    </div>
+                                </>)
                                 :
                                 (<>
-                                   {/* <GoogleLogin onSuccess={(credentialResponse) => { handleOnLoginSuccess(credentialResponse) }} onError={() => { }} /> */}
-                                   <Nav.Link as={Link} to="/login">
-                                    Login
-                                </Nav.Link>
+                                    {/* <GoogleLogin onSuccess={(credentialResponse) => { handleOnLoginSuccess(credentialResponse) }} onError={() => { }} /> */}
+                                    <Nav.Link as={Link} to="/login">
+                                        Login
+                                    </Nav.Link>
                                 </>)
                             }
 
