@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { CiLight } from "react-icons/ci";
 import { MdDarkMode } from "react-icons/md";
 import { useTheme } from "../../context/ThemeContext";
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useCredential } from "../../hooks/useCredential";
 import appLocalStorage from "../../util/appLocalStorage";
 import { localKeyItem } from "../../util/localKeyItem";
@@ -15,10 +14,6 @@ const TopNavigation = () => {
     const { credential, updateCredential } = useCredential();
     const userInfoString: User = appLocalStorage.getItem(localKeyItem.userInfo);
     const isAdmin = userInfoString && userInfoString.role === "admin";
-
-    const handleOnLoginSuccess = (credentialResponse: CredentialResponse) => {
-        updateCredential(credentialResponse.credential);
-    }
 
     const handleOnLogout = () => {
         updateCredential(undefined);
@@ -45,6 +40,9 @@ const TopNavigation = () => {
                         <Nav.Link>
                             {credential ? 
                             (<>
+                                <Nav.Link as={Link} to="/profile">
+                                    Profile
+                                </Nav.Link>
                                 <Nav.Link onClick={handleOnLogout} as={Link} to="/">
                                     Logout
                                 </Nav.Link>

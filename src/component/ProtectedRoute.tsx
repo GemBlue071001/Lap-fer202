@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
     requiredRole?: string;
 }
 
-const ProtectedRoute = ({ requiredRole = 'admin' }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ requiredRole }: ProtectedRouteProps) => {
     const userInfoString: User = appLocalStorage.getItem(localKeyItem.userInfo);
     
     // Check if user is logged in
@@ -16,7 +16,7 @@ const ProtectedRoute = ({ requiredRole = 'admin' }: ProtectedRouteProps) => {
         return <Navigate to="/login" replace />;
     }
     
-    // Check if user has the required role
+    // Check if user has the required role (only if a specific role is required)
     if (requiredRole && userInfoString.role !== requiredRole) {
         // Redirect to home page if not authorized
         return <Navigate to="/" replace />;

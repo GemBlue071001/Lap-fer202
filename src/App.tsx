@@ -5,6 +5,7 @@ import OrchidDetailPage from './pages/OrchidDetailPage';
 import ContactPage from './pages/ContactPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminOrchidPage from './pages/AdminOrchidPage';
+import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './component/ProtectedRoute';
 
 function App() {
@@ -16,6 +17,11 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/orchid/:id" element={<OrchidDetailPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        
+        {/* Protected User Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
         
         {/* Protected Admin Routes */}
         <Route element={<ProtectedRoute requiredRole="admin" />}>
