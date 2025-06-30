@@ -1,6 +1,8 @@
 export interface Comment {
-    userId: number;
-    content: string;
+    rating: number;
+    comment: string;
+    author: string;
+    date: string;
 }
 
 export interface Orchid {
@@ -14,6 +16,6 @@ export interface Orchid {
     numberOfLikes: number;
     origin: string;
     category: string;
-    comments?: Comment[];
+    feedback?: Comment[];
 }
 

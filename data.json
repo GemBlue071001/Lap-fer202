@@ -74,6 +74,14 @@
           "userId": 1,
           "content": "nice one"
         }
+      ],
+      "feedback": [
+        {
+          "rating": 3,
+          "comment": "ssss22",
+          "author": "admin",
+          "date": "2025-06-30T13:39:30.911Z"
+        }
       ]
     },
     {

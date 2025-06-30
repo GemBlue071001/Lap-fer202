@@ -21,6 +21,7 @@ const OrchidDetailPage = () => {
     const [orchid, setOrchid] = useState<Orchid | undefined>();
     const [isLoading, setIsLoading] = useState(true);
     const [comment, setComment] = useState('');
+    const [rating, setRating] = useState(5);
     const [isSubmittingComment, setIsSubmittingComment] = useState(false);
     const commentLoaded = useRef(false);
     const [userClearedComment, setUserClearedComment] = useState(false);
@@ -46,7 +47,7 @@ const OrchidDetailPage = () => {
     const handleCommentSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (!userInfoString || !userInfoString.id) {
+        if (!userInfoString || !userInfoString.id || !userInfoString.email) {
             setToastType('danger');
             setToastMessage('You must be logged in to comment');
             setShowToast(true);
@@ -67,24 +68,33 @@ const OrchidDetailPage = () => {
             const currentOrchid = { ...orchid };
             
             // Add the new comment
-            if (!currentOrchid.comments) {
-                currentOrchid.comments = [];
+            if (!currentOrchid.feedback) {
+                currentOrchid.feedback = [];
             }
             
             // Check if user already has a comment
-            const existingCommentIndex = currentOrchid.comments.findIndex(
-                comment => comment.userId === userInfoString.id
+            const existingCommentIndex = currentOrchid.feedback.findIndex(
+                feedback => feedback.author === userInfoString.email
             );
+            
+            const now = new Date().toISOString();
             
             if (existingCommentIndex !== -1) {
                 // Update existing comment
-                currentOrchid.comments[existingCommentIndex].content = comment.trim();
+                currentOrchid.feedback[existingCommentIndex] = {
+                    rating: rating,
+                    comment: comment.trim(),
+                    author: userInfoString.email,
+                    date: now
+                };
                 setToastMessage('Your comment has been updated');
             } else {
                 // Add new comment
-                currentOrchid.comments.push({
-                    userId: userInfoString.id,
-                    content: comment.trim()
+                currentOrchid.feedback.push({
+                    rating: rating,
+                    comment: comment.trim(),
+                    author: userInfoString.email,
+                    date: now
                 });
                 setToastMessage('Comment added successfully');
             }
@@ -124,10 +134,11 @@ const OrchidDetailPage = () => {
 
     // Set comment input value if user has an existing comment (only on initial load)
     useEffect(() => {
-        if (orchid && orchid.comments && userInfoString && userInfoString.id && !commentLoaded.current && !userClearedComment) {
-            const existingComment = orchid.comments.find(c => c.userId === userInfoString.id);
+        if (orchid && orchid.feedback && userInfoString && userInfoString.email && !commentLoaded.current && !userClearedComment) {
+            const existingComment = orchid.feedback.find(f => f.author === userInfoString.email);
             if (existingComment) {
-                setComment(existingComment.content);
+                setComment(existingComment.comment);
+                setRating(existingComment.rating);
                 commentLoaded.current = true;
             }
         }
@@ -231,9 +242,9 @@ const OrchidDetailPage = () => {
                         
                         {/* Comment List */}
                         <div className="mt-3">
-                            {orchid.comments && orchid.comments.length > 0 ? (
-                                orchid.comments.map((comment, index) => {
-                                    const isUserComment = userInfoString && userInfoString.id === comment.userId;
+                            {orchid.feedback && orchid.feedback.length > 0 ? (
+                                orchid.feedback.map((feedback, index) => {
+                                    const isUserComment = userInfoString && userInfoString.email === feedback.author;
                                     return (
                                         <Card 
                                             key={index} 
@@ -244,10 +255,21 @@ const OrchidDetailPage = () => {
                                                     {isUserComment ? (
                                                         <>Your Comment <span className="text-primary">(you)</span></>
                                                     ) : (
-                                                        `User #${comment.userId}`
+                                                        `${feedback.author}`
                                                     )}
                                                 </Card.Title>
-                                                <Card.Text>{comment.content}</Card.Text>
+                                                <div className="mb-2">
+                                                    Rating: {Array.from({ length: feedback.rating }).map((_, i) => (
+                                                        <span key={i} className="text-warning">★</span>
+                                                    ))}
+                                                    {Array.from({ length: 5 - feedback.rating }).map((_, i) => (
+                                                        <span key={i}>☆</span>
+                                                    ))}
+                                                </div>
+                                                <Card.Text>{feedback.comment}</Card.Text>
+                                                <div className="text-muted small">
+                                                    {new Date(feedback.date).toLocaleString()}
+                                                </div>
                                             </Card.Body>
                                         </Card>
                                     );
@@ -260,9 +282,9 @@ const OrchidDetailPage = () => {
                         {/* Add Comment Form */}
                         <div className="mt-4">
                             <h4>Add a Comment</h4>
-                            {userInfoString && userInfoString.id ? (
+                            {userInfoString && userInfoString.email ? (
                                 <>
-                                    {orchid.comments && orchid.comments.find(c => c.userId === userInfoString.id) ? (
+                                    {orchid.feedback && orchid.feedback.find(f => f.author === userInfoString.email) ? (
                                         <div className="d-flex justify-content-between align-items-center mb-2">
                                             <p className="text-info mb-0">You already have a comment. Submitting will update your existing comment.</p>
                                             <Button 
@@ -270,6 +292,7 @@ const OrchidDetailPage = () => {
                                                 size="sm"
                                                 onClick={() => {
                                                     setComment('');
+                                                    setRating(5);
                                                     setUserClearedComment(true);
                                                 }}
                                             >
@@ -279,6 +302,25 @@ const OrchidDetailPage = () => {
                                     ) : null}
                                     <Form onSubmit={handleCommentSubmit}>
                                         <Form.Group className="mb-3">
+                                            <Form.Label>Rating</Form.Label>
+                                            <div>
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <span
+                                                        key={star}
+                                                        onClick={() => setRating(star)}
+                                                        style={{ 
+                                                            cursor: 'pointer', 
+                                                            fontSize: '24px',
+                                                            color: star <= rating ? '#ffb700' : '#ccc'
+                                                        }}
+                                                    >
+                                                        {star <= rating ? '★' : '☆'}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Your Comment</Form.Label>
                                             <Form.Control
                                                 as="textarea"
                                                 rows={3}
@@ -294,7 +336,7 @@ const OrchidDetailPage = () => {
                                             disabled={isSubmittingComment}
                                         >
                                             {isSubmittingComment ? 'Submitting...' : (
-                                                orchid.comments && orchid.comments.find(c => c.userId === userInfoString.id) 
+                                                orchid.feedback && orchid.feedback.find(f => f.author === userInfoString.email) 
                                                 ? 'Update Comment' 
                                                 : 'Submit Comment'
                                             )}
@@ -303,7 +345,7 @@ const OrchidDetailPage = () => {
                                 </>
                             ) : (
                                 <Alert variant="info">
-                                    Please <Button variant="link" onClick={() => navigate('/login')}>login</Button> to add a comment.
+                                    Please <Button variant="link" className="p-0" onClick={() => navigate('/login')}>log in</Button> to leave a comment.
                                 </Alert>
                             )}
                         </div>
