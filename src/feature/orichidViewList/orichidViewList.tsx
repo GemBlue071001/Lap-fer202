@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useCallback, useEffect, useState, useMemo } from "react"
+import { useCallback, useEffect, useState, useMemo, useRef } from "react"
 import OrchidsCard from "../../component/OrchidCard/OrchidCard"
 import styles from "./OrichidViewList.module.css"
 import { OrchidService } from "../../services/orchidService"
@@ -17,8 +17,11 @@ const OrichidViewList = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string>("");
-    const [filteredOrchids, setFilteredOrchids] = useState<Orchid[]>();
+    const [isSearching, setIsSearching] = useState(false);
 
+    // For debouncing search
+    const searchTimeoutRef = useRef<number | null>(null);
+    
     const userInfoString: User = appLocalStorage.getItem(localKeyItem.userInfo);
     
     // Extract unique categories
@@ -39,66 +42,68 @@ const OrichidViewList = () => {
         return Array.from(categorySet).sort();
     }, [orchids]);
     
-    const getListOfOrchidsAsync = useCallback(async () => {
+    const fetchOrchids = useCallback(async (search: string = "") => {
+        setIsSearching(true);
         try {
-            const orchidData = await OrchidService.getOrchids("");
-            setOrchids(orchidData);
-            setLoading(false);
+            const orchidData = await OrchidService.getOrchids(search);
+            // Client-side filtering for category
+            if (selectedCategory) {
+                const filteredData = orchidData.filter(orchid => orchid.category === selectedCategory);
+                setOrchids(filteredData);
+            } else {
+                setOrchids(orchidData);
+            }
         } catch (error) {
             console.error("Error fetching orchids:", error);
+        } finally {
+            setIsSearching(false);
             setLoading(false);
         }
-    }, []);
-    
-    const applyFilters = useCallback(() => {
-        if (!orchids) return;
-        
-        let filtered = [...orchids];
-        
-        // Apply search term filter
-        if (searchTerm.trim()) {
-            filtered = filtered.filter(orchid => 
-                orchid.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                orchid.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                orchid.origin?.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        }
-        
-        // Apply category filter
-        if (selectedCategory) {
-            filtered = filtered.filter(orchid => 
-                orchid.category === selectedCategory
-            );
-        }
-        
-        setFilteredOrchids(filtered);
-    }, [orchids, searchTerm, selectedCategory]);
+    }, [selectedCategory]);
     
     const handleOnClick = () => {
         setIsCreateModalOpen(true);
     };
 
+    // Handle search with debouncing
     const handleSearch = (value: string) => {
         setSearchTerm(value);
+        
+        // Clear any existing timeout
+        if (searchTimeoutRef.current) {
+            window.clearTimeout(searchTimeoutRef.current);
+        }
+        
+        // Set a new timeout to delay the API call
+        searchTimeoutRef.current = window.setTimeout(() => {
+            fetchOrchids(value);
+        }, 500); // 500ms delay
     };
     
     const handleCategorySelect = (category: string) => {
         setSelectedCategory(category);
+        // Since fetchOrchids now handles client-side filtering based on selectedCategory,
+        // we just need to call it with the current search term
+        fetchOrchids(searchTerm);
     };
     
     const clearFilters = () => {
         setSearchTerm("");
         setSelectedCategory("");
+        fetchOrchids("");
     };
 
+    // Initial load
     useEffect(() => {
-        getListOfOrchidsAsync();
-    }, [getListOfOrchidsAsync]);
-    
-    // Apply filters when dependencies change
-    useEffect(() => {
-        applyFilters();
-    }, [applyFilters, orchids, searchTerm, selectedCategory]);
+        fetchOrchids();
+        
+        // Cleanup function to clear any existing timeout when component unmounts
+        return () => {
+            if (searchTimeoutRef.current) {
+                window.clearTimeout(searchTimeoutRef.current);
+            }
+        };
+    }, [fetchOrchids]);
 
     return (
         <>
@@ -119,12 +124,12 @@ const OrichidViewList = () => {
                                     placeholder="Search orchids"
                                     value={searchTerm}
                                     onChange={e => handleSearch(e.target.value)}
+                                    disabled={isSearching}
                                 />
                                 <InputGroup.Text
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => handleSearch(searchTerm)}
+                                    style={{ cursor: isSearching ? 'default' : 'pointer' }}
                                 >
-                                    <FiSearch />
+                                    {isSearching ? <Spinner size="sm" animation="border" /> : <FiSearch />}
                                 </InputGroup.Text>
                             </InputGroup>
                             {/* {userInfoString.role === "admin" &&
@@ -146,7 +151,11 @@ const OrichidViewList = () => {
                             </span>
                             <div className={styles['category-filter']}>
                                 <Dropdown>
-                                    <Dropdown.Toggle variant="outline-secondary" id="dropdown-category">
+                                    <Dropdown.Toggle 
+                                        variant="outline-secondary" 
+                                        id="dropdown-category"
+                                        disabled={isSearching}
+                                    >
                                         {selectedCategory || 'All Categories'}
                                     </Dropdown.Toggle>
 
@@ -211,8 +220,13 @@ const OrichidViewList = () => {
                         )}
                         
                         <div className={`${styles['list-view-container']} ${styles['grid-alignment-fix']}`}>
-                            {(filteredOrchids ?? orchids)?.length ? (
-                                (filteredOrchids ?? orchids)?.map((orchid) => (
+                            {isSearching ? (
+                                <div className={styles['empty-state']}>
+                                    <Spinner animation="border" role="status" />
+                                    <p className="mt-3">Searching...</p>
+                                </div>
+                            ) : orchids?.length ? (
+                                orchids.map((orchid: Orchid) => (
                                     <div className={styles['card-wrapper']} key={orchid.id}>
                                         <OrchidsCard {...orchid} />
                                     </div>
@@ -234,7 +248,7 @@ const OrichidViewList = () => {
                         <CreateOrchidModal
                             isOpen={isCreateModalOpen}
                             onClose={() => setIsCreateModalOpen(false)}
-                            onOrchidCreated={getListOfOrchidsAsync}
+                            onOrchidCreated={() => fetchOrchids(searchTerm)}
                         />
                     </div>
                 )}
