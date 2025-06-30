@@ -200,7 +200,7 @@ const OrchidDetailPage = () => {
                             >
                                 Back to Home
                             </Button>
-                            {userInfoString.role === "admin" && (<>
+                            {/* {userInfoString.role === "admin" && (<>
                                 <Button
                                     variant={isLightTheme ? 'secondary' : 'light'}
                                     onClick={() => setIsUpdateModalOpen(true)}
@@ -229,7 +229,7 @@ const OrchidDetailPage = () => {
                                     className="mt-3"
                                 >
                                     Delete
-                                </Button></>)}
+                                </Button></>)} */}
                         </div>
 
                     </div>

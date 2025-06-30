@@ -157,6 +157,18 @@
       "origin": "fsadf",
       "category": "sfds",
       "id": "1751166450455"
+    },
+    {
+      "name": "Holy Ghost Orchid",
+      "rating": 0,
+      "isSpecial": true,
+      "isNatural": false,
+      "image": "https://www.epicgardening.com/wp-content/uploads/2023/09/Holy-Ghost.jpg",
+      "color": "red",
+      "numberOfLikes": 0,
+      "origin": "Southeastern Ecuador",
+      "category": "Epidendroideae",
+      "id": "1751296366279"
     }
   ],
   "user": [
