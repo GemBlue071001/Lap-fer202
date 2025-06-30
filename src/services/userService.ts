@@ -9,6 +9,23 @@ export const userService = {
         return response;
     },
     
+    register: async (userData: Omit<User, 'id'>) => {
+        // Check if email already exists
+        const existingUsers: User[] = await api.get(`/user?email=${encodeURIComponent(userData.email)}`);
+        
+        if (existingUsers.length > 0) {
+            throw new Error('Email already exists');
+        }
+        
+        // Create new user
+        const response = await api.post('/user', {
+            ...userData,
+            role: 'user' // Default role for new users
+        });
+        
+        return response;
+    },
+    
     updateUser: async (userId: number, userData: User) => {
         // Update user data
         const response = await api.put(`/user/${userId}`, userData);
