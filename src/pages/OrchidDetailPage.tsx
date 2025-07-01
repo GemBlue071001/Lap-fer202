@@ -9,6 +9,7 @@ import { Orchid } from '../model.ts/orchids';
 import appLocalStorage from '../util/appLocalStorage';
 import { User } from '../model.ts/user';
 import { localKeyItem } from '../util/localKeyItem';
+import styles from './OrchidDetailPage.module.css';
 
 const OrchidDetailPage = () => {
     const { id } = useParams();
@@ -188,9 +189,38 @@ const OrchidDetailPage = () => {
                         <h2>{orchid.name}</h2>
                         <div className="mt-4">
                             <h4>Details</h4>
-                            <p><strong>Name:</strong> {orchid.name}</p>
-                            <p><strong>Likes:</strong> {orchid.numberOfLikes} ❤️</p>
-                            <p><strong>Description:</strong> Beautiful {orchid.name} orchid species</p>
+                            <div className={styles['detail-row']}>
+                                <span className={styles['detail-label']}>Name:</span>
+                                <span className={styles['detail-value']}>{orchid.name}</span>
+                            </div>
+                            <div className={styles['detail-row']}>
+                                <span className={styles['detail-label']}>Likes:</span>
+                                <span className={styles['detail-value']}>{orchid.numberOfLikes} ❤️</span>
+                            </div>
+                            <div className={styles['detail-row']}>
+                                <span className={styles['detail-label']}>Category:</span>
+                                <span className={styles['detail-value']}>{orchid.category}</span>
+                            </div>
+                            <div className={styles['detail-row']}>
+                                <span className={styles['detail-label']}>Special:</span>
+                                <span className={styles['detail-value']}>
+                                    <span className={`${styles['badge']} ${orchid.isSpecial ? styles['special-badge'] : 'bg-secondary'}`}>
+                                        {orchid.isSpecial ? 'Yes' : 'No'}
+                                    </span>
+                                </span>
+                            </div>
+                            <div className={styles['detail-row']}>
+                                <span className={styles['detail-label']}>Natural:</span>
+                                <span className={styles['detail-value']}>
+                                    <span className={`${styles['badge']} ${orchid.isNatural ? styles['natural-badge'] : 'bg-secondary'}`}>
+                                        {orchid.isNatural ? 'Yes' : 'No'}
+                                    </span>
+                                </span>
+                            </div>
+                            <div className={styles['detail-row']}>
+                                <span className={styles['detail-label']}>Description:</span>
+                                <span className={styles['detail-value']}>Beautiful {orchid.name} orchid species</span>
+                            </div>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start', gap: '20px' }}>
                             <Button
@@ -200,36 +230,6 @@ const OrchidDetailPage = () => {
                             >
                                 Back to Home
                             </Button>
-                            {/* {userInfoString.role === "admin" && (<>
-                                <Button
-                                    variant={isLightTheme ? 'secondary' : 'light'}
-                                    onClick={() => setIsUpdateModalOpen(true)}
-                                    className="mt-3"
-                                >
-                                    Update
-                                </Button></>)}
-
-
-                            {userInfoString.role === "admin" && (<>
-                                <Button
-                                    variant="danger"
-                                    onClick={async () => {
-                                        try {
-                                            await OrchidService.deleteOrchids(orchid.id);
-                                            setToastType('success');
-                                            setToastMessage('Orchid successfully deleted');
-                                            setShowToast(true);
-                                            setTimeout(() => navigate('/'), 2000);
-                                        } catch (error) {
-                                            setToastType('danger');
-                                            setToastMessage('Failed to delete orchid');
-                                            setShowToast(true);
-                                        }
-                                    }}
-                                    className="mt-3"
-                                >
-                                    Delete
-                                </Button></>)} */}
                         </div>
 
                     </div>

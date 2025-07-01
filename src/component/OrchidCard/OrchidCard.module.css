@@ -46,6 +46,30 @@
     gap: 4px;
 }
 
+.badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+}
+
+.special {
+    background-color: #4CAF50; /* Green */
+}
+
+.natural {
+    background-color: #2196F3; /* Blue */
+}
+
 .modalOverlay {
     position: fixed;
     top: 0;

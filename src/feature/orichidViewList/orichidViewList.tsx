@@ -46,7 +46,6 @@ const OrichidViewList = () => {
         setIsSearching(true);
         try {
             const orchidData = await OrchidService.getOrchids(search);
-            // Client-side filtering for category
             if (selectedCategory) {
                 const filteredData = orchidData.filter(orchid => orchid.category === selectedCategory);
                 setOrchids(filteredData);
@@ -65,16 +64,11 @@ const OrichidViewList = () => {
         setIsCreateModalOpen(true);
     };
 
-    // Handle search with debouncing
     const handleSearch = (value: string) => {
         setSearchTerm(value);
-        
-        // Clear any existing timeout
         if (searchTimeoutRef.current) {
             window.clearTimeout(searchTimeoutRef.current);
         }
-        
-        // Set a new timeout to delay the API call
         searchTimeoutRef.current = window.setTimeout(() => {
             fetchOrchids(value);
         }, 500); // 500ms delay
@@ -82,8 +76,6 @@ const OrichidViewList = () => {
     
     const handleCategorySelect = (category: string) => {
         setSelectedCategory(category);
-        // Since fetchOrchids now handles client-side filtering based on selectedCategory,
-        // we just need to call it with the current search term
         fetchOrchids(searchTerm);
     };
     
@@ -96,8 +88,6 @@ const OrichidViewList = () => {
     // Initial load
     useEffect(() => {
         fetchOrchids();
-        
-        // Cleanup function to clear any existing timeout when component unmounts
         return () => {
             if (searchTimeoutRef.current) {
                 window.clearTimeout(searchTimeoutRef.current);
